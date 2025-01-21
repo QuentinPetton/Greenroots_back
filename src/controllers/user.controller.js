@@ -70,20 +70,16 @@ export async function updateUser(req, res) {
     }
     //récupérer l'id de l'utilisateur à modifier
     const userId = Number.parseInt(req.params.id);
-
     // On valide les infos reçues avant la requête
     const { error } = userSchema.validate(req.body);
     if (error) {
       return res.status(400).json({ error: error.message });
     }
-
     const user = await User.findByPk(userId);
-
     if (!user) {
       res.status(404).send('Utilisateur non trouvé');
       return;
     }
-
     const {
       email,
       password,
@@ -110,7 +106,6 @@ export async function updateUser(req, res) {
         });
       }
     }
-
     user.email = email || user.email;
     user.password = password || user.password;
     user.firstname = firstname || user.firstname;
@@ -125,14 +120,11 @@ export async function updateUser(req, res) {
     user.entity_name = entity_name || user.entity_name;
     user.entity_type = entity_type || user.entity_type;
     user.entity_siret = entity_siret || user.entity_siret;
-
     // on hash le password
     if (password) {
       user.password = await bcrypt.hash(password, 10);
     }
-
     await user.save();
-
     res.json({
       message: 'Utilisateur modifié',
     });
@@ -188,13 +180,11 @@ export async function getAllReviews(req, res) {
 export async function createReview(req, res) {
   //récupérer l'id de l'utilisateur
   const userId = req.userId;
-
   if (!userId) {
     return res
       .status(400)
       .json({ error: 'Accès non autorisé. Veuillez vous connecter.' });
   }
-
   //validation des données de la review
   const reviewSchema = Joi.object({
     content: Joi.string().required(),
@@ -205,15 +195,12 @@ export async function createReview(req, res) {
   if (error) {
     return res.status(400).json({ message: error.message });
   }
-
   const { content, rating } = req.body;
-
   //vérifier si l'utilisateur existe
   const user = await User.findByPk(userId);
   if (!user) {
     return res.status(404).send('Utilisateur non trouvé');
   }
-
   //créer la review
   try {
     const review = await Review.create({

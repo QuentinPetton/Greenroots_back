@@ -23,15 +23,12 @@ export async function getOneTree(req, res) {
     const schema = Joi.object({
       id: Joi.number().integer().positive().required(),
     });
-
     // Validation de l'ID avec Joi
     const { error } = schema.validate({ id: req.params.id });
     if (error) {
       return res.status(400).json({ message: error.message });
     }
-
     const treeId = Number.parseInt(req.params.id);
-
     const tree = await Tree.findByPk(treeId, {
       include: [
         {

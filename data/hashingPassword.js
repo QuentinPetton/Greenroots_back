@@ -17,7 +17,7 @@ getUserAndHashPassword()
     console.log('Hachage des mots de passe terminé');
     process.exit(0); // Sortie avec succès
   })
-  .catch(error => {
+  .catch((error) => {
     console.error('Erreur lors du hachage des mots de passe:', error);
     process.exit(1); // Sortie avec erreur
   });

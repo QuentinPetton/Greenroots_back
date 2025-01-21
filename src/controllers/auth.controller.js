@@ -80,7 +80,7 @@ export async function register(req, res) {
       password: Joi.string()
         .min(12)
         .pattern(
-          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\p{L}\p{N}\p{P}\p{S}])[\p{L}\p{N}\p{P}\p{S}]{12,}$/u
+          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\p{L}\p{N}\p{P}\p{S}])[\p{L}\p{N}\p{P}\p{S}]{12,}$/u,
         )
         .required(),
       firstname: Joi.string().required(),
@@ -96,12 +96,10 @@ export async function register(req, res) {
       entity_siret: Joi.string(),
       id_role: Joi.number().required(),
     });
-
     const { error } = createUserSchema.validate(req.body);
     if (error) {
       return res.status(400).json({ error: error.message });
     }
-
     // Vérifier si l'email existe déjà
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
@@ -109,7 +107,6 @@ export async function register(req, res) {
         .status(400)
         .json({ error: 'Cet email est déjà utilisé par un autre utilisateur' });
     }
-
     // on hash le password
     const hashedPassword = await bcrypt.hash(password, 10);
 

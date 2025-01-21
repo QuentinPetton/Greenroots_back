@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
+    "test": "node --test",
     "dev": "node --watch index.js",
     "db:create": "psql -U greenroots -d greenroots -f ./data/create_BDD.sql",
     "db:populate": "psql -U greenroots -d greenroots -f ./data/seeding_data.sql",

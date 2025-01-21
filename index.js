@@ -9,40 +9,101 @@ import helmet from 'helmet';
 
 dotenv.config();
 const app = express();
+app.set('trust proxy', 1);
 
 // Désactiver le header x-powered-by Express
 app.disable('x-powered-by');
 
 // Adresses autorisées pour CORS
-const allowedOrigins = process.env.CORS_ORIGIN.split(','); // Remplace par l'origine autorisée
+// const allowedOrigins = process.env.CORS_ORIGIN.split(','); // Remplace par l'origine autorisée
 
 // Configure Express pour faire confiance aux proxies
 // Ici, 1 signifie que le premier niveau de proxy est de confiance
 // Si votre application est derrière plusieurs niveaux de proxy, augmentez ce nombre
-app.set('trust proxy', 3);
+// app.set('trust proxy', 3);
+
+// app.use(
+//   helmet({
+//     contentSecurityPolicy: false,
+//   }),
+// );
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        fontSrc: [
+          "'self'",
+          'data:',
+          'https://greenrootsback-production.up.railway.app',
+        ],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-hashes'"], // Retirer 'unsafe-inline' si possible
+        scriptSrcAttr: ["'unsafe-inline'"], // Permet les attributs inline comme onclick
+        connectSrc: ["'self'"],
+        imgSrc: ["'self'", 'data:'],
+      },
+    },
+    referrerPolicy: { policy: 'no-referrer' },
+    crossOriginEmbedderPolicy: true,
+  }),
+);
+app.use(helmet.xssFilter());
 
 // Configuration CORS
-const corsOptions = {
-  origin: (origin, callback) => {
-    // Adresses autorisées pour CORS
-    const allowedOrigins = process.env.CORS_ORIGIN
-      ? process.env.CORS_ORIGIN.split(',').map((origin) => origin.trim())
-      : [];
-    console.log('Request Origin:', origin); // Affiche l'origine de chaque requête
-    if (!origin || allowedOrigins.includes(origin)) {
-      // Retourne l'origine exacte de la requête
-      callback(null, origin);
-    } else {
-      console.error(`Origine non autorisée : ${origin}`);
-      callback(new Error('Accès refusé : origine non autorisée.'));
-    }
-  },
-  methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true, // Si des cookies/sessions sont nécessaires
-};
+// const corsOptions = {
+//   origin: (origin, callback) => {
+//     // Adresses autorisées pour CORS
+//     const allowedOrigins = process.env.CORS_ORIGIN
+//       ? process.env.CORS_ORIGIN.split(',').map((origin) => origin.trim())
+//       : [];
+//     console.log('Request Origin:', origin);
+//     if (!origin || allowedOrigins.includes(origin)) {
+//       // Retourne l'origine exacte de la requête
+//       callback(null, origin);
+//     } else {
+//       console.error(`Origine non autorisée : ${origin}`);
+//       callback(new Error('Accès refusé : origine non autorisée.'));
+//     }
+//   },
+//   methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
+//   allowedHeaders: ['Content-Type', 'Authorization'],
+//   credentials: true, // Si des cookies/sessions sont nécessaires
+// };
+// const corsOptions = {
+//   origin: (origin, callback) => {
+//     const allowedOrigins = process.env.CORS_ORIGIN
+//       ? process.env.CORS_ORIGIN.split(',').map((origin) => origin.trim())
+//       : [];
 
-// Ajout du CORS avec les paramètres définis
+//     if (!origin || allowedOrigins.includes(origin) || origin === 'null') {
+//       callback(null, true); // Autoriser l'origine
+//     } else {
+//       console.error(`Origine non autorisée : ${origin}`);
+//       callback(new Error('Accès refusé : origine non autorisée.'));
+//     }
+//   },
+//   methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
+//   allowedHeaders: ['Content-Type', 'Authorization'],
+//   credentials: true,
+// };
+// app.use(cors(corsOptions));
+// const corsOptions = {
+//   origin: '*', // Autorise toutes les origines
+//   methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
+//   allowedHeaders: ['Content-Type', 'Authorization'],
+//   credentials: true,
+// };
+// app.use(cors(corsOptions));
+const corsOptions = {
+  origin: [
+    'http://localhost:5173', // Origine pour le développement local
+    'https://greenroots-front.vercel.app', // Origine pour la production
+  ],
+  methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'], // Headers nécessaires pour votre API
+  credentials: true, // Nécessaire si vous utilisez des cookies ou sessions
+};
 app.use(cors(corsOptions));
 
 // Gérer les requêtes préflight (OPTIONS)
@@ -90,7 +151,7 @@ app.use('/admin', backOfficeRouter);
 app.use('/', (req, res) => {
   res.send("<h1>Bienvenue sur l'API de GreenRoots</h1>");
 });
-
+console.log('Environment Variables:', process.env);
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
