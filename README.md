@@ -1,5 +1,7 @@
 # GREENROOTS Backend
 
+- Greenroots frontend - [@greenroots_front](https://github.com/QuentinPetton/Greenroots_front)
+
 ## 1 - Clone projet
 
 ```bash
@@ -49,3 +51,8 @@ DB_PASSWORD=password
 ```bash
 npm run dev
 ```
+
+### Author
+
+Project realized in team of 4 developpers:
+- Linkedin - [@QuentinPetton](https://www.linkedin.com/in/quentin-petton)
