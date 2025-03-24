@@ -36,7 +36,8 @@ export async function getAllCampaign(req, res) {
 
     res.json(campaigns);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('❌ Erreur dans GET /api/campaigns :', error);
+    res.status(500).json({ error: `Erreur serveur : ${error.message}` });
   }
 }
 

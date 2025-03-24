@@ -15,7 +15,7 @@ app.set('trust proxy', 1);
 app.disable('x-powered-by');
 
 // Adresses autorisées pour CORS
-// const allowedOrigins = process.env.CORS_ORIGIN.split(',');
+const allowedOrigins = process.env.CORS_ORIGIN.split(',');
 
 // Configure Express pour faire confiance aux proxies
 
@@ -51,10 +51,11 @@ app.use(
 app.use(helmet.xssFilter());
 
 const corsOptions = {
-  origin: [
-    'http://localhost:5173', // Origine pour le développement local
-    'https://greenroots-front.vercel.app', // Origine pour la production
-  ],
+  // origin: [
+  // 'http://localhost:5173', // Origine pour le développement local
+  // 'https://greenroots-front.vercel.app', // Origine pour la production
+  allowedOrigins,
+  // ],
   methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
